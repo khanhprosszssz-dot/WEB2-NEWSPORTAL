@@ -1,0 +1,27 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{ var csrf = Antiforgery.GetAndStoreTokens(Context).RequestToken; }
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="@csrf" />
+    <title>@(ViewData["Title"] ?? "Nhịp Sống — Góc nhìn mỗi ngày")</title>
+    <meta name="description" content="@(ViewData["Description"] ?? "Nhịp Sống: tin tức, góc nhìn và câu chuyện cộng đồng. Website demo đồ án Web 2.")" />
+    <meta property="og:title" content="@(ViewData["Title"] ?? "Nhịp Sống")" />
+    <meta property="og:description" content="@ViewData["Description"]" />
+    <meta property="og:type" content="article" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/portal.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="topline"><div class="wrap"><span id="today"></span><span>ĐỒ ÁN WEB 2 · NỘI DUNG DEMO</span><a href="/rss">RSS ↗</a></div></div>
+    <header class="wrap masthead"><a class="brand" href="/">nhịp<span>sống</span><i>GÓC NHÌN MỖI NGÀY</i></a><form action="/tim-kiem" class="searchbar"><input name="search" aria-label="Tìm kiếm tin tức" placeholder="Bạn muốn đọc gì hôm nay?" /><button aria-label="Tìm kiếm">⌕</button></form><div id="account-nav"><a href="/dang-nhap">Đăng nhập →</a></div></header>
+    <nav class="mainnav"><div class="wrap" id="categories-nav"><a href="/">Trang chủ</a></div></nav>
+    <main class="wrap">@RenderBody()</main>
+    <div id="toast" role="status" hidden></div>
+    <footer><div class="wrap footergrid"><a class="brand" href="/">nhịp<span>sống</span></a><p id="footer-copy">Một góc nhìn mới, mỗi ngày.<br />NewsPortal · Đồ án Lập trình Web 2</p><div><a href="/">Trang chủ</a> · <a href="/tim-kiem">Tìm kiếm</a> · <a href="/rss">RSS</a><p class="muted">Nội dung minh họa, không phải bản tin thực tế.</p></div></div></footer>
+    <script src="~/js/portal.js" asp-append-version="true"></script>
+    <script src="~/js/cms.js" asp-append-version="true"></script>
+    <script src="~/js/community.js" asp-append-version="true"></script>
+</body>
+</html>
