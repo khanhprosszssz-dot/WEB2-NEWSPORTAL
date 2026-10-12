@@ -51,5 +51,11 @@ app.Logger.LogInformation("NewsPortal API starting in {Environment}", app.Enviro
 if (app.Environment.IsDevelopment()) { app.UseSwagger(); app.UseSwaggerUI(); }
 app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+// Liveness does not prove database availability. Demo checks should use readiness.
+app.MapGet("/health/ready", async (ApplicationDbContext db, CancellationToken cancellationToken) =>
+{
+    var ready = await db.Database.CanConnectAsync(cancellationToken);
+    return Results.Json(new { status = ready ? "ready" : "database-unavailable" }, statusCode: ready ? 200 : 503);
+});
 app.Run();
 public partial class Program;

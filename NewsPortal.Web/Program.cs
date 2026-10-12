@@ -10,7 +10,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     o.Events.OnRedirectToLogin = c => { c.Response.StatusCode = 401; return Task.CompletedTask; };
     o.Events.OnRedirectToAccessDenied = c => { c.Response.StatusCode = 403; return Task.CompletedTask; };
 });
-builder.Services.AddHttpClient<PortalApiClient>(c => { c.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"] ?? "http://localhost:5100/"); c.Timeout = TimeSpan.FromSeconds(30); });
+builder.Services.AddHttpClient<PortalApiClient>(c => { c.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"] ?? "https://localhost:7280/"); c.Timeout = TimeSpan.FromSeconds(30); });
 var app = builder.Build();
 app.UseExceptionHandler("/Home/Error");
 if (!app.Environment.IsDevelopment()) { app.UseHsts(); app.UseHttpsRedirection(); }

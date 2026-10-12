@@ -42,6 +42,12 @@ public class ResponseDocumentation : IOperationFilter
             }
         };
         else operation.Responses.TryAdd(success, new() { Description = noContent ? "Completed; no response body." : "Resource created." });
+        if (action == "MediaController.Download") operation.Responses["200"] = new() {
+            Description = "Media file attachment.",
+            Content = new Dictionary<string, OpenApiMediaType> {
+                ["application/octet-stream"] = new() { Schema = new() { Type = "string", Format = "binary" } }
+            }
+        };
         if (action == "NewsletterController.Subscribe") operation.Responses.TryAdd("204", new() { Description = "Already subscribed." });
         if (context.ApiDescription.HttpMethod is "POST" or "PUT" or "DELETE")
             operation.Responses.TryAdd("409", new() { Description = "Duplicate value, stale RowVersion or resource still in use." });

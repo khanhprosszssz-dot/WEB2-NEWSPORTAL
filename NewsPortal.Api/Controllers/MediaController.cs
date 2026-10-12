@@ -47,5 +47,17 @@ public class MediaController(ApplicationDbContext db, IWebHostEnvironment env) :
         db.Media.Remove(m); await db.SaveChangesAsync();
         System.IO.File.Delete(Path.Combine(env.ContentRootPath, "wwwroot", "uploads", m.FileName)); return NoContent();
     }
+    /// <summary>Download an existing media file as an attachment for editorial users.</summary>
+    [HttpGet("{id:int}/download")]
+    [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Download(int id)
+    {
+        var media = await db.Media.AsNoTracking().SingleOrDefaultAsync(m => m.Id == id);
+        if (media == null || !System.Text.RegularExpressions.Regex.IsMatch(media.FileName, "^[a-f0-9]{32}\\.(jpg|jpeg|png|webp)$")) return NotFound();
+        var path = Path.Combine(env.ContentRootPath, "wwwroot", "uploads", media.FileName);
+        if (!System.IO.File.Exists(path)) return NotFound();
+        return PhysicalFile(path, media.MimeType, media.OriginalFileName);
+    }
 }
 public class MediaUpload { public IFormFile? File { get; set; } }

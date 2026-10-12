@@ -55,7 +55,8 @@ public class ExtendedTests
         {
             Http.Dispose();
             using var config = JsonDocument.Parse(await File.ReadAllTextAsync(Path.Combine(Root(), "NewsPortal.Api/appsettings.Development.json")));
-            var connection = config.RootElement.GetProperty("ConnectionStrings").GetProperty("DefaultConnection").GetString();
+            var connection = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+                ?? config.RootElement.GetProperty("ConnectionStrings").GetProperty("DefaultConnection").GetString();
             await using var db = new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>().UseSqlServer(connection).Options);
             // Only delete the account created by this test, guarded by both generated ID and email.
             if (!await db.Users.AnyAsync(u => u.Id == Id && u.Email == Email)) return;
@@ -222,6 +223,9 @@ public class ExtendedTests
         Assert.True(!get.TryGetProperty("security", out var security) || security.GetArrayLength() == 0);
         Assert.True(paths.GetProperty("/api/v1/articles/{id}").GetProperty("put").GetProperty("responses").TryGetProperty("204", out _));
         Assert.True(paths.GetProperty("/api/v1/media").GetProperty("get").GetProperty("responses").GetProperty("200").GetProperty("content").GetProperty("application/json").TryGetProperty("schema", out _));
+        var download = paths.GetProperty("/api/v1/media/{id}/download").GetProperty("get");
+        Assert.Equal("binary", download.GetProperty("responses").GetProperty("200").GetProperty("content").GetProperty("application/octet-stream").GetProperty("schema").GetProperty("format").GetString());
+        Assert.Equal(HttpStatusCode.Unauthorized, (await http.GetAsync("http://localhost:5100/api/v1/media/1/download")).StatusCode);
     }
     [Fact]
     public void PublicCacheEtagsCannotRepeatAfterAnApplicationRestart()

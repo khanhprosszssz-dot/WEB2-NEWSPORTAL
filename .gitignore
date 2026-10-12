@@ -6,3 +6,14 @@ artifacts/
 **/wwwroot/uploads/
 *.user
 *.log
+**/bin/
+**/obj/
+.vs/
+**/TestResults/
+node_modules/
+.env
+.env.*
+**/appsettings.Development.json
+**/appsettings.Production.json
+*.user
+*.suo
