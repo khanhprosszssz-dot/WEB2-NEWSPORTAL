@@ -1,7 +1,8 @@
 $ErrorActionPreference = 'Stop'
 $workspace = Split-Path $PSScriptRoot -Parent
 $runId = [Guid]::NewGuid().ToString('N')
-$runRoot = Join-Path $workspace ('.local/acceptance/' + $runId)
+# Keep NuGet resource paths below Windows' legacy MAX_PATH limit.
+$runRoot = Join-Path $workspace ('.local/acceptance/' + $runId.Substring(0, 12))
 $sourceRoot = Join-Path $runRoot 'source'
 $databaseName = 'NewsPortal_Acceptance_' + $runId
 $environmentNames = @('NUGET_PACKAGES','ConnectionStrings__DefaultConnection','Seed__Password','Jwt__Key','ASPNETCORE_ENVIRONMENT')

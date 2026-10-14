@@ -7,7 +7,6 @@ namespace NewsPortal.Api.Controllers;
 [ApiController, Route("api/v1/articles")]
 public class ArticlesController(ArticleService service) : ControllerBase
 {
-    /// <summary>Search published articles using paging, sorting, category, tag, author and date filters.</summary>
     [HttpGet] public Task<PageDto<ArticleListDto>> List([FromQuery] ArticleQuery query) => service.ListAsync(query, User);
     [HttpGet("manage"), Authorize(Roles = "Administrator,Editor,Journalist")]
     public Task<PageDto<ArticleListDto>> Manage([FromQuery] ArticleQuery query) => service.ListAsync(query, User, true);

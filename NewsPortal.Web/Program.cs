@@ -20,6 +20,74 @@ app.Use(async (context, next) => {
     await next();
 });
 app.UseStaticFiles();
+// Media Proxy - Lấy ảnh từ NewsPortal.Api
+app.Use(async (context, next) =>
+{
+    if (!HttpMethods.IsGet(context.Request.Method) ||
+        !context.Request.Path.StartsWithSegments("/media", out var remaining))
+    {
+        await next();
+        return;
+    }
+
+    var fileName = remaining.Value?.TrimStart('/');
+
+    if (string.IsNullOrWhiteSpace(fileName) ||
+        fileName.Contains('/') ||
+        fileName.Contains('\\') ||
+        fileName == "." ||
+        fileName == "..")
+    {
+        context.Response.StatusCode = 404;
+        return;
+    }
+
+    var apiBaseUrl = builder.Configuration["Api:BaseUrl"]
+                     ?? "https://localhost:7280/";
+
+    var imageUrl = new Uri(
+        new Uri(apiBaseUrl.TrimEnd('/') + "/"),
+        "uploads/" + Uri.EscapeDataString(fileName)
+    );
+
+    var factory = context.RequestServices
+        .GetRequiredService<IHttpClientFactory>();
+
+    using var client = factory.CreateClient();
+
+    try
+    {
+        using var response = await client.GetAsync(
+            imageUrl,
+            HttpCompletionOption.ResponseHeadersRead,
+            context.RequestAborted
+        );
+
+        context.Response.StatusCode = (int)response.StatusCode;
+
+        if (!response.IsSuccessStatusCode)
+            return;
+
+        context.Response.ContentType =
+            response.Content.Headers.ContentType?.ToString()
+            ?? "application/octet-stream";
+
+        await using var stream =
+            await response.Content.ReadAsStreamAsync(
+                context.RequestAborted
+            );
+
+        await stream.CopyToAsync(
+            context.Response.Body,
+            context.RequestAborted
+        );
+    }
+    catch (HttpRequestException)
+    {
+        if (!context.Response.HasStarted)
+            context.Response.StatusCode = 502;
+    }
+});
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

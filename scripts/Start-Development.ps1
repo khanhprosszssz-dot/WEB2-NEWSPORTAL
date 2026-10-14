@@ -34,7 +34,7 @@ foreach ($item in @(@('NewsPortal.Api',5100),@('NewsPortal.Web',5200))) {
     $records += @{ Id = $process.Id; Path = $exe }
 }
 $records | ConvertTo-Json | Set-Content $pidsFile -Encoding UTF8
-foreach ($address in @('http://localhost:5100/health','http://localhost:5200/')) {
+foreach ($address in @('http://localhost:5100/health/ready','http://localhost:5200/')) {
     $ready = $false
     for ($attempt = 0; $attempt -lt 30; $attempt++) {
         try { $response = Invoke-WebRequest $address -UseBasicParsing -TimeoutSec 2; if ($response.StatusCode -eq 200) { $ready = $true; break } } catch {}
