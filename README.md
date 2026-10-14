@@ -1,6 +1,6 @@
 # NewsPortal — Nhịp Sống
 
-> **Rà soát ngày 12/10/2026:** bản source này build sạch; 2 test độc lập dữ liệu và 16 HTTP probe đã Pass, 3 probe dữ liệu Blocked vì SQL Server chưa khả dụng. Các kết quả nghiệm thu 21 tests/browser trong phần nội dung cũ bên dưới là lịch sử đi kèm gói gốc, chưa được chạy lại đầy đủ trong môi trường hiện tại. Đọc `REVIEW_STATUS.md` trước khi demo. Endpoint mới: `/health/ready` và `/api/v1/media/{id}/download`.
+> **Kiểm thử lại ngày 14/10/2026:** build 0 warning/0 error; 21/21 test tự động, 8 kiểm tra Reader desktop/mobile, 26 mốc workflow và 3 kiểm tra CORS/phục hồi đều Pass trên database nghiệm thu mới. Đã sửa cấu hình SQL/API local, dependency bảo mật và đường dẫn nghiệm thu Windows. Xem [báo cáo hiện tại](TEST_REPORT_2026-10-14.md); các báo cáo ngày 30/09 và 12/10 là lịch sử.
 
 Đồ án ASP.NET Core 10 Web API + MVC, EF Core và SQL Server. Giao diện tiếng Việt gồm Reader và CMS. Nội dung demo không phải tin tức thực tế.
 
